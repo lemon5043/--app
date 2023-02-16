@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Search from "../components/Search";
 import Picture from "../components/Picture";
-import InfiniteScroll from "react-infinite-scroll-component";
+import InfiniteScroll from "react-infinite-scroller";
+import "../styles/style.css";
 import axios from "axios";
 
 const Home = () => {
@@ -9,6 +10,7 @@ const Home = () => {
   let [data, setData] = useState(null);
   let [page, setPage] = useState(1);
   let [currentSearch, setCurrentSearch] = useState("");
+  let [enableLoadMoreData, setEnableLoadMoreData] = useState(false);
   //pexel api 需要的 key
   const auth = "";
   //網頁顯示的頁數及每次顯示幾筆圖片
@@ -26,6 +28,7 @@ const Home = () => {
     });
     setData(result.data.photos);
     setCurrentSearch(input);
+    setEnableLoadMoreData(true);
   };
 
   useEffect(() => {
@@ -51,7 +54,7 @@ const Home = () => {
     });
     setTimeout(() => {
       setData(data.concat(result.data.photos));
-    }, 1500);
+    }, 500);
   };
 
   return (
@@ -64,10 +67,10 @@ const Home = () => {
       />
       {/* 使用 infinite scroll，網頁下拉會自動刷新 */}
       <InfiniteScroll
-        dataLength={15}
-        next={morePicture}
-        hasMore={true}
-        loader={<h4>Loading...</h4>}
+        pageStart={0}
+        loadMore={morePicture}
+        hasMore={enableLoadMoreData}
+        loader={<h4>loading...</h4>}
       >
         <div className="pictures">
           {data &&
@@ -76,9 +79,9 @@ const Home = () => {
             })}
         </div>
       </InfiniteScroll>
-      <div className="morePicture">
-        <button onClick={morePicture}>更多圖片</button>
-      </div>
+      {/* <div className="morePicture">
+        <button onClick={morePicture} disabled={!enableLoadMoreData}>更多圖片</button>
+      </div> */}
     </div>
   );
 };
